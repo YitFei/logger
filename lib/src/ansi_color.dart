@@ -23,21 +23,24 @@ class AnsiColor {
       : fg = null,
         color = true;
 
+  //* This method for both color configuration
+  const AnsiColor.fgBg(this.fg, this.bg) : color = (fg != null || bg != null);
+
   @override
   String toString() {
-    if (fg != null) {
-      return '${ansiEsc}38;5;${fg}m';
-    } else if (bg != null) {
-      return '${ansiEsc}48;5;${bg}m';
-    } else {
-      return '';
-    }
+    final codes = <String>[];
+    if (fg != null) codes.add('${ansiEsc}38;5;${fg}m');
+    if (bg != null) codes.add('${ansiEsc}48;5;${bg}m');
+    if (codes.isEmpty) return '';
+    return codes.join('');
   }
 
   String call(String msg) {
     if (color) {
-      // ignore: unnecessary_brace_in_string_interps
-      return '${this}$msg$ansiDefault';
+      final fgCode = fg != null ? '${ansiEsc}38;5;${fg}m' : '';
+      final bgCode = bg != null ? '${ansiEsc}48;5;${bg}m' : '';
+
+      return '$fgCode$bgCode$msg$ansiDefault';
     } else {
       return msg;
     }
